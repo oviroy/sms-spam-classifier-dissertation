@@ -1,0 +1,2 @@
+rows_raw,rows_dedup,duplicates_removed,n_ham,n_spam,spam_pct,avg_char_len_ham,avg_char_len_spam,avg_word_len_ham,avg_word_len_spam
+5572,5158,414,4516,642,12.45,71.0,137.8,14.2,23.7
