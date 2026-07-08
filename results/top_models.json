@@ -1,0 +1,20 @@
+[
+  {
+    "model": "LinearSVM",
+    "representation": "tfidf_unigram",
+    "f1": 0.9482,
+    "fpr": 0.0044,
+    "best_params": {
+      "C": 1
+    }
+  },
+  {
+    "model": "LogisticRegression",
+    "representation": "tfidf_bigram",
+    "f1": 0.9444,
+    "fpr": 0.0055,
+    "best_params": {
+      "C": 10
+    }
+  }
+]

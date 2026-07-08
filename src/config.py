@@ -4,6 +4,15 @@ Reproducibility rule: the random seed, the data/results paths, and the
 cross-validation definition all live here. Never hard-code these elsewhere.
 """
 
+import os
+
+# XGBoost's OpenMP threading deadlocks on this machine (a fit hangs indefinitely
+# at ~0% CPU). Forcing a single OpenMP thread eliminates the hang. This must be
+# set BEFORE numpy/sklearn/xgboost load their native libraries; because every
+# notebook and src module imports this config first, doing it here makes the whole
+# project hang-free and reproducible. (Set only if the user hasn't overridden it.)
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+
 from pathlib import Path
 
 from sklearn.model_selection import StratifiedKFold
