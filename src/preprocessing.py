@@ -50,6 +50,10 @@ def _get_stemmer():
 
 _PUNCT_TABLE = str.maketrans("", "", string.punctuation)
 _TOKEN_RE = re.compile(r"\b\w+\b")
+# Keeps punctuation as standalone tokens: a run of word chars, OR a single
+# non-word/non-space char. Used only when ``remove_punct=False`` so the "keep
+# punctuation" ablation config genuinely retains "!", "£", "$" etc. as features.
+_TOKEN_RE_KEEP_PUNCT = re.compile(r"\w+|[^\w\s]")
 
 
 def load_dataset(drop_duplicates: bool = True) -> pd.DataFrame:
@@ -101,10 +105,12 @@ def clean(
     Order: lowercase -> strip punctuation -> tokenize -> drop stopwords -> stem.
     Returns a space-joined string of tokens (ready for a vectorizer).
 
-    NOTE for Phase 3 (ablation): tokenization uses ``\\b\\w+\\b``, which keeps only
-    word characters, so punctuation is dropped during tokenization regardless of
-    ``remove_punct``. To make a genuine "keep punctuation as features" ablation
-    config, this tokenizer must be revisited when building notebook 03.
+    The ``remove_punct`` switch is genuine (Phase 3 ablation relies on it):
+    - ``remove_punct=True``  strips punctuation, then tokenizes word characters
+      (``\\w+``). On this default path the strip already removed all punctuation, so
+      the token set is identical to the historical ``\\b\\w+\\b`` tokenizer.
+    - ``remove_punct=False`` keeps punctuation as standalone tokens
+      (``\\w+|[^\\w\\s]``), so "keep punctuation as features" is a real config.
     """
     if not isinstance(text, str):
         text = str(text)
@@ -112,7 +118,9 @@ def clean(
         text = text.lower()
     if remove_punct:
         text = text.translate(_PUNCT_TABLE)
-    tokens = _TOKEN_RE.findall(text)
+        tokens = _TOKEN_RE.findall(text)
+    else:
+        tokens = _TOKEN_RE_KEEP_PUNCT.findall(text)
     if remove_stopwords:
         stops = _get_stopwords()
         tokens = [t for t in tokens if t not in stops]
