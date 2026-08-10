@@ -1,4 +1,4 @@
-"""Central configuration — imported everywhere so settings are defined once.
+"""Central configuration - imported everywhere so settings are defined once.
 
 Reproducibility rule: the random seed, the data/results paths, and the
 cross-validation definition all live here. Never hard-code these elsewhere.
@@ -41,7 +41,7 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 def get_cv(n_splits: int = 5) -> StratifiedKFold:
     """Return the project's stratified k-fold cross-validator.
 
-    Stratified because the dataset is imbalanced (~13% spam) — each fold keeps
+    Stratified because the dataset is imbalanced (~13% spam) - each fold keeps
     the same spam/ham ratio. Seeded so folds are identical across runs.
     """
     return StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=RANDOM_SEED)

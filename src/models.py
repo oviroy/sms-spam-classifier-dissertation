@@ -9,7 +9,7 @@ Class imbalance (~13% spam) is handled at the model level:
 - XGBoost uses ``scale_pos_weight`` (pass the ham:spam ratio of the *training*
   set, computed after the split).
 
-Grids are deliberately small — the study runs on CPU only.
+Grids are deliberately small - the study runs on CPU only.
 """
 
 from sklearn.linear_model import LogisticRegression

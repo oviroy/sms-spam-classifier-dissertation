@@ -1,7 +1,7 @@
 """Evaluation harness: metrics, the leakage-free grid runner, and timing.
 
 Positive class = spam (label 1). The metric the supervisor cares most about is
-**FPR = FP / (FP + TN)** — legitimate messages wrongly flagged as spam.
+**FPR = FP / (FP + TN)** - legitimate messages wrongly flagged as spam.
 
 Key design point (no leakage): each configuration is a ``Pipeline([vectorizer,
 classifier])`` fed to ``GridSearchCV``. The vectorizer is therefore fitted on the
@@ -79,7 +79,7 @@ def run_master_grid(
     models : dict
         ``{name: (estimator, param_grid)}`` from ``models.get_models``.
     representations : dict
-        ``{name: vectorizer_factory}`` — each factory returns a fresh vectorizer.
+        ``{name: vectorizer_factory}`` - each factory returns a fresh vectorizer.
     cv : cross-validator
         The stratified k-fold from ``config.get_cv``.
     n_jobs : int
