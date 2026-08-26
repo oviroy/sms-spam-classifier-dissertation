@@ -4,7 +4,8 @@ Final-year dissertation (Shuvo Roy Ovi, 25004376). An empirical, reproducible co
 four classical classifiers - Multinomial Naive Bayes, Logistic Regression, Linear SVM, and
 XGBoost - for SMS spam detection on the UCI/Kaggle SMS Spam Collection.
 
-See `PLAN.md` for the full phase-by-phase plan and `CLAUDE.md` for the working rules.
+The finished report is `report/report.md` (and `report/report.pdf`), with the presentation in
+`report/slides.md` and the browser-verified citation list in `report/references.md`.
 
 ## Requirements
 
@@ -113,7 +114,8 @@ results/artifacts written by earlier ones (e.g. 03 depends on `top_models.json` 
 jupyter nbconvert --to notebook --execute --inplace notebooks/01_eda.ipynb
 jupyter nbconvert --to notebook --execute --inplace notebooks/02_representations_baselines.ipynb
 jupyter nbconvert --to notebook --execute --inplace notebooks/03_preprocessing_ablation.ipynb
-# 04, 05 as they are built
+jupyter nbconvert --to notebook --execute --inplace notebooks/04_hybrid_features.ipynb
+jupyter nbconvert --to notebook --execute --inplace notebooks/05_significance_interpretability_efficiency.ipynb
 ```
 
 Or open them interactively and run all cells top-to-bottom:
@@ -122,30 +124,59 @@ Or open them interactively and run all cells top-to-bottom:
 jupyter notebook
 ```
 
-**Expect notebook 02 to take a few minutes** (16 models × representations, `GridSearchCV`
-over CPU). Notebooks 01 and 03 finish in well under a minute. This project deliberately forces
-`OMP_NUM_THREADS=1` inside `src/config.py` (works identically on both OSes since it's set from
-Python, not the shell) to avoid an XGBoost/OpenMP deadlock - you don't need to set anything
-yourself.
+**Expect notebooks 02 and 04 to take a few minutes each** (`GridSearchCV` over CPU, with
+XGBoost the slow part). Notebooks 01, 03 and 05 finish in well under a minute each. This
+project deliberately forces `OMP_NUM_THREADS=1` inside `src/config.py` (works identically on
+both OSes since it's set from Python, not the shell) to avoid an XGBoost/OpenMP deadlock - you
+don't need to set anything yourself.
+
+---
+
+## Building the report
+
+```bash
+python report/wordcount.py      # body-prose word count against the 6,000-word requirement
+python report/build_report.py   # report.md -> report.html, then print to PDF from a browser
+```
+
+`build_report.py` keeps image paths relative so the figures resolve whether the HTML is served
+over HTTP or opened straight from disk.
 
 ---
 
 ## Layout
 
 ```
-data/spam.csv   dataset (label + message)
-src/            reusable helpers imported by the notebooks
-notebooks/      01_eda → 05_significance_interpretability_efficiency
-results/        metrics CSVs + figures (single source of truth for the report)
-report/         dissertation drafts
+data/spam.csv     dataset (label + message)
+src/              reusable helpers imported by the notebooks
+notebooks/        01_eda through 05_significance_interpretability_efficiency
+results/          metrics CSVs + figures (single source of truth for the report)
+report/           report.md, report.pdf, slides.md, references.md, screenshots/
 ```
+
+### What each notebook produces
+
+| Notebook | Writes |
+|---|---|
+| 01 EDA | `eda_summary.csv`, `split_indices.npz`, class-balance / length / token figures |
+| 02 Core comparison | `master_metrics.csv`, `top_models.json`, F1 + FPR heatmaps, ROC curves |
+| 03 Preprocessing ablation | `ablation.csv`, `fig_ablation.png` |
+| 04 Hybrid features | `hybrid_comparison.csv`, `fig_hybrid_lift.png` |
+| 05 Significance / interpretability / efficiency | `significance.csv`, `efficiency.csv`, `hybrid_stat_coefficients.csv`, coefficient / importance / SHAP / efficiency figures |
 
 ## Reproducibility guarantees
 
 - Fixed `RANDOM_SEED = 42` (`src/config.py`).
 - One stratified 80/20 split, created once and persisted to `results/split_indices.npz`.
+  Notebooks reload it; none of them re-splits.
 - Version-pinned dependencies in `requirements.txt`.
 - No hand-typed metrics - every reported number comes from a file in `results/`.
+- Notebooks 03 and 04 each contain an **anchor row** that re-runs the previous phase's exact
+  pipeline and asserts it reproduces that phase's metrics to full floating-point precision, so
+  a change that would silently alter results fails loudly instead.
+- Every metric file regenerates identically from a fresh clone and a newly built virtualenv.
+  `results/efficiency.csv` is the sole exception: it records wall-clock timings, which vary by
+  a few percent per run by nature.
 
 ## Troubleshooting
 
