@@ -1,0 +1,23 @@
+metric,value,note
+vocab_size_bow,3183.0,features after min_df=2 on the training split
+vocab_size_tfidf_unigram,3183.0,features after min_df=2 on the training split
+vocab_size_tfidf_bigram,9622.0,features after min_df=2 on the training split
+vocab_size_tfidf_trigram,12941.0,features after min_df=2 on the training split
+xgb_tokens_used,252.0,distinct tokens XGBoost split on at least once
+xgb_tokens_available,3183.0,vocabulary of its best representation (bow)
+xgb_tokens_used_pct,7.92,percentage of the vocabulary the ensemble actually uses
+cv_fold1_f1_LinearSVM,0.926829,per-fold F1 behind the paired t-test
+cv_fold2_f1_LinearSVM,0.924623,per-fold F1 behind the paired t-test
+cv_fold3_f1_LinearSVM,0.918367,per-fold F1 behind the paired t-test
+cv_fold4_f1_LinearSVM,0.920792,per-fold F1 behind the paired t-test
+cv_fold5_f1_LinearSVM,0.895522,per-fold F1 behind the paired t-test
+cv_fold1_f1_LogisticRegression,0.927536,per-fold F1 behind the paired t-test
+cv_fold2_f1_LogisticRegression,0.920792,per-fold F1 behind the paired t-test
+cv_fold3_f1_LogisticRegression,0.914573,per-fold F1 behind the paired t-test
+cv_fold4_f1_LogisticRegression,0.917073,per-fold F1 behind the paired t-test
+cv_fold5_f1_LogisticRegression,0.92,per-fold F1 behind the paired t-test
+cv_fold1_f1_XGBoost,0.885572,per-fold F1 behind the paired t-test
+cv_fold2_f1_XGBoost,0.907216,per-fold F1 behind the paired t-test
+cv_fold3_f1_XGBoost,0.895522,per-fold F1 behind the paired t-test
+cv_fold4_f1_XGBoost,0.912821,per-fold F1 behind the paired t-test
+cv_fold5_f1_XGBoost,0.859903,per-fold F1 behind the paired t-test

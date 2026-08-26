@@ -135,24 +135,42 @@ def run_master_grid(
     return pd.DataFrame(rows), fitted
 
 
-def time_and_size(estimator, X_train, y_train, X_test, n_repeat: int = 3) -> dict:
+def time_and_size(
+    estimator, X_train, y_train, X_test, n_repeat: int = 3, n_trials: int = 7
+) -> dict:
     """Measure fit time, per-message inference latency (ms), and pickled size (bytes).
 
     Used by the Phase-5 efficiency analysis; kept here so timing logic is centralised.
-    """
-    est = clone(estimator)
-    t0 = time.perf_counter()
-    est.fit(X_train, y_train)
-    fit_time = time.perf_counter() - t0
 
-    t0 = time.perf_counter()
-    for _ in range(n_repeat):
-        est.predict(X_test)
-    infer_ms = (time.perf_counter() - t0) / (n_repeat * len(X_test)) * 1000.0
+    Both timings are the **median of ``n_trials`` independent measurements**, not a single
+    reading. A single reading is not a usable measurement here: the models train in
+    fractions of a second, so ordinary scheduler noise on a shared machine is the same
+    size as the differences between them, and back-to-back runs of identical code can
+    reorder the models. The median is used rather than the mean because timing noise is
+    one-sided - interference can only ever make a run slower - so a mean is dragged upward
+    by outliers while the median is not. The spread is returned alongside so the analysis
+    can state whether a difference exceeds the measurement error.
+
+    ``model_size_bytes`` is deterministic and needs no repetition.
+    """
+    fits, laten = [], []
+    for _ in range(n_trials):
+        est = clone(estimator)
+        t0 = time.perf_counter()
+        est.fit(X_train, y_train)
+        fits.append(time.perf_counter() - t0)
+
+        t0 = time.perf_counter()
+        for _ in range(n_repeat):
+            est.predict(X_test)
+        laten.append((time.perf_counter() - t0) / (n_repeat * len(X_test)) * 1000.0)
 
     size = len(pickle.dumps(est))
     return {
-        "fit_time_s": fit_time,
-        "infer_latency_ms": infer_ms,
+        "fit_time_s": float(np.median(fits)),
+        "fit_time_iqr_s": float(np.percentile(fits, 75) - np.percentile(fits, 25)),
+        "infer_latency_ms": float(np.median(laten)),
+        "infer_latency_iqr_ms": float(np.percentile(laten, 75) - np.percentile(laten, 25)),
+        "n_trials": n_trials,
         "model_size_bytes": size,
     }

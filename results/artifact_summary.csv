@@ -1,0 +1,10 @@
+artifact,n_messages,n_spam,n_ham,pct_of_corpus,ham_share,note
+ltgt,197,0,197,3.82,1.0,HTML-escaped numeric placeholder &lt;#&gt; surviving punctuation stripping
+callså,5,5,0,0.1,0.0,mojibake: a corrupted GBP prefix fused to the preceding word
+ltgt (test set only),47,0,47,4.55,1.0,share of the held-out test set carrying the artifact
+22,2,2,0,0.04,0.0,rank 7 spam coefficient but occurs in <=6 messages
+arsenal,2,2,0,0.04,0.0,rank 9 spam coefficient but occurs in <=6 messages
+88066,2,2,0,0.04,0.0,rank 12 spam coefficient but occurs in <=6 messages
+callså,5,5,0,0.1,0.0,rank 13 spam coefficient but occurs in <=6 messages
+std,6,6,0,0.12,0.0,rank 18 spam coefficient but occurs in <=6 messages
+truly,4,2,2,0.08,0.5,rank 19 spam coefficient but occurs in <=6 messages
