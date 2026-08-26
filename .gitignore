@@ -14,3 +14,7 @@ __pycache__/
 email
 CLAUDE.md
 PLAN.md
+# Playwright MCP scratch output
+.playwright-mcp/
+# Intermediate HTML used only to render screenshots
+report/screenshots/_*
