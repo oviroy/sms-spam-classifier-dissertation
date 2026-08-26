@@ -1,0 +1,6 @@
+feature,coefficient,direction,rank_of_all_features,n_features_total
+char_len,8.7369,-> spam,2,9627
+digit_density,19.8919,-> spam,1,9627
+punct_freq,-4.696,-> ham,9,9627
+upper_ratio,1.3505,-> spam,263,9627
+url_count,4.4173,-> spam,10,9627

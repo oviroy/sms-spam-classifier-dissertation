@@ -1,0 +1,5 @@
+test,model_a,model_b,input,statistic,p_value,n_discordant,a_only_correct,b_only_correct,significant,verdict
+"McNemar (paired, same test set)",LinearSVM,LogisticRegression,test-set predictions over 1032 messages,1.0,1.0,3.0,2.0,1.0,False,NOT significant at alpha=0.05: no evidence that LinearSVM and LogisticRegression make different errors on this test set
+Paired t-test (across 5 CV folds),LinearSVM,LogisticRegression,per-fold CV F1 on the training set,-0.5035909502278417,0.641017958389366,,,,False,NOT significant at alpha=0.05: no evidence that the F1 gap between LinearSVM and LogisticRegression is consistent across folds
+"McNemar (paired, same test set)",LinearSVM,XGBoost,test-set predictions over 1032 messages,4.0,0.266845703125,13.0,9.0,4.0,False,NOT significant at alpha=0.05: no evidence that LinearSVM and XGBoost make different errors on this test set
+Paired t-test (across 5 CV folds),LinearSVM,XGBoost,per-fold CV F1 on the training set,4.143227139223645,0.014338885559594547,,,,True,significant at alpha=0.05: the F1 gap between LinearSVM and XGBoost is consistent across folds
