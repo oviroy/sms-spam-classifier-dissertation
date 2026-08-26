@@ -1,9 +1,12 @@
 """Data loading, text cleaning, and the single persisted train/test split.
 
-Three public functions:
+Public API:
 - ``load_dataset``  : read the CSV, tidy columns, map labels, drop duplicates.
 - ``clean``         : normalise a message; each step is independently toggleable
                       (Phase 3's ablation flips these switches).
+- ``TextCleaner``   : ``clean`` wrapped as a Pipeline step (Phase 4 needs the raw
+                      text to reach the statistical-feature branch, so cleaning
+                      moves inside the pipeline rather than being applied first).
 - ``make_split``    : create the ONE stratified 80/20 split, persisted to disk
                       so every notebook reuses the exact same split.
 """
@@ -13,6 +16,7 @@ import string
 
 import numpy as np
 import pandas as pd
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.model_selection import train_test_split
 
 from .config import DATA_PATH, HAM, SPAM, RANDOM_SEED, SPLIT_PATH, TEST_SIZE
@@ -128,6 +132,51 @@ def clean(
         stemmer = _get_stemmer()
         tokens = [stemmer.stem(t) for t in tokens]
     return " ".join(tokens)
+
+
+class TextCleaner(BaseEstimator, TransformerMixin):
+    """``clean`` as a Pipeline step, with the same independent toggles.
+
+    Notebooks 02 and 03 cleaned the text *before* building the pipeline, which was
+    fine because every branch of the pipeline wanted cleaned text. Phase 4's hybrid
+    feature set does not: the statistical features (uppercase ratio, punctuation
+    frequency) must see the **raw** message, because cleaning is exactly what
+    destroys that signal. So the pipeline is fed raw text and this transformer
+    cleans only the lexical branch.
+
+    Cleaning is a deterministic per-message map with nothing fitted, so running it
+    inside the pipeline introduces no leakage; it is equivalent to the earlier
+    notebooks' pre-cleaning, which is what the Phase-4 control arm verifies.
+    """
+
+    def __init__(
+        self,
+        lowercase: bool = True,
+        remove_stopwords: bool = False,
+        stem: bool = False,
+        remove_punct: bool = True,
+    ):
+        self.lowercase = lowercase
+        self.remove_stopwords = remove_stopwords
+        self.stem = stem
+        self.remove_punct = remove_punct
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return np.array(
+            [
+                clean(
+                    t,
+                    lowercase=self.lowercase,
+                    remove_stopwords=self.remove_stopwords,
+                    stem=self.stem,
+                    remove_punct=self.remove_punct,
+                )
+                for t in X
+            ]
+        )
 
 
 def make_split(df: pd.DataFrame, force: bool = False):
