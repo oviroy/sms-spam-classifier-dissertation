@@ -156,12 +156,13 @@ The individual steps, if you need to run one on its own:
 python report/make_frontmatter.py  # regenerate the contents and figure lists from the document
 python report/build_report.py      # report.md -> report.html
 python report/page_map.py          # read page positions out of the rendered PDF
-python report/make_gantt.py        # regenerate Figure 1 from the git history
+python report/make_milestones.py   # regenerate Figure 1 from the git history
 ```
 
 `build_report.py` keeps image paths relative so the figures resolve whether the HTML is served
-over HTTP or opened straight from disk. `make_gantt.py` derives every date in the project
-timeline from the repository's own commit timestamps, so no date in the report is typed by hand.
+over HTTP or opened straight from disk. `make_milestones.py` derives the phase sequence in
+Figure 1 from the repository's own commit history, so the ordering shown is the ordering that
+actually happened rather than one typed in.
 
 ---
 
