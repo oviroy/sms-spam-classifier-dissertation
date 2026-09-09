@@ -22,10 +22,11 @@ report/screenshots/_*
 # Redundant PDF export of report/supervisor_meeting_qa.md
 ovi.pdf
 
-# Source documents supplied for this revision, kept locally and never published.
-# The repository URL is cited publicly in the dissertation's Appendix A, so anything
-# committed here is publishable. The module handbook is the university's copyrighted
-# document, and the assessment report is private feedback about the student. Neither
-# is the author's work to redistribute.
-report/example report.docx
-report/ovi_bhai_marking_and_ improvment_report.pdf
+# The dissertation itself is kept off the public repository.
+# The repository URL is cited in the dissertation's Appendix A, so anything committed
+# here is published. Publishing the report before it is marked risks a similarity
+# check matching the student's own public copy, and the folder also held the module
+# handbook (the university's copyrighted document) and private assessment feedback.
+# The whole folder is therefore local-only; it was removed from the history, not just
+# from the current commit.
+report/

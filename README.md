@@ -4,8 +4,9 @@ Final-year dissertation (Shuvo Roy Ovi, 25004376). An empirical, reproducible co
 four classical classifiers - Multinomial Naive Bayes, Logistic Regression, Linear SVM, and
 XGBoost - for SMS spam detection on the UCI/Kaggle SMS Spam Collection.
 
-The finished report is `report/report.md` (and `report/report.pdf`), with the presentation in
-`report/slides.md` and the browser-verified citation list in `report/references.md`.
+This repository holds the code, data and results. The dissertation document itself is not
+published here: it is kept local until it has been marked, so that a similarity check cannot
+match it against a public copy by the same author.
 
 ## Requirements
 
@@ -135,34 +136,9 @@ don't need to set anything yourself.
 
 ## Building the report
 
-```bash
-bash report/build_pdf.sh        # the whole thing: contents, page numbers, PDF
-python report/wordcount.py      # body-prose count against the 12,000-15,000 requirement
-python report/verify_report.py  # twelve pre-submission consistency gates
-```
-
-`build_pdf.sh` runs the build **twice**, and the reason is worth knowing before editing it. The
-module handbook requires the table of contents and the table of figures to carry page numbers,
-but page numbers do not exist until the document has been laid out, and laying it out requires
-the contents to already occupy its final number of lines. So the first pass renders the contents
-with placeholder numbers and prints the PDF, `page_map.py` reads back which page each heading
-and caption landed on, and the second pass substitutes the real numbers. The placeholder is the
-same width as a page number, so both passes paginate identically. The script re-measures at the
-end and fails loudly if any entry moved between passes.
-
-The individual steps, if you need to run one on its own:
-
-```bash
-python report/make_frontmatter.py  # regenerate the contents and figure lists from the document
-python report/build_report.py      # report.md -> report.html
-python report/page_map.py          # read page positions out of the rendered PDF
-python report/make_milestones.py   # regenerate Figure 1 from the git history
-```
-
-`build_report.py` keeps image paths relative so the figures resolve whether the HTML is served
-over HTTP or opened straight from disk. `make_milestones.py` derives the phase sequence in
-Figure 1 from the repository's own commit history, so the ordering shown is the ordering that
-actually happened rather than one typed in.
+The report and the scripts that build it live outside this repository, for the reason given
+above. Everything the report quotes is reproduced here: run the notebooks in order and compare
+`results/` against the committed copies.
 
 ---
 
@@ -173,7 +149,6 @@ data/spam.csv     dataset (label + message)
 src/              reusable helpers imported by the notebooks
 notebooks/        01_eda through 06_dataset_artifacts
 results/          metrics CSVs + figures (single source of truth for the report)
-report/           report.md, report.pdf, slides.md, references.md, screenshots/
 ```
 
 ### What each notebook produces
