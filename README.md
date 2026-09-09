@@ -116,6 +116,7 @@ jupyter nbconvert --to notebook --execute --inplace notebooks/02_representations
 jupyter nbconvert --to notebook --execute --inplace notebooks/03_preprocessing_ablation.ipynb
 jupyter nbconvert --to notebook --execute --inplace notebooks/04_hybrid_features.ipynb
 jupyter nbconvert --to notebook --execute --inplace notebooks/05_significance_interpretability_efficiency.ipynb
+jupyter nbconvert --to notebook --execute --inplace notebooks/06_dataset_artifacts.ipynb
 ```
 
 Or open them interactively and run all cells top-to-bottom:
@@ -135,12 +136,32 @@ don't need to set anything yourself.
 ## Building the report
 
 ```bash
-python report/wordcount.py      # body-prose word count against the 6,000-word requirement
-python report/build_report.py   # report.md -> report.html, then print to PDF from a browser
+bash report/build_pdf.sh        # the whole thing: contents, page numbers, PDF
+python report/wordcount.py      # body-prose count against the 12,000-15,000 requirement
+python report/verify_report.py  # twelve pre-submission consistency gates
+```
+
+`build_pdf.sh` runs the build **twice**, and the reason is worth knowing before editing it. The
+module handbook requires the table of contents and the table of figures to carry page numbers,
+but page numbers do not exist until the document has been laid out, and laying it out requires
+the contents to already occupy its final number of lines. So the first pass renders the contents
+with placeholder numbers and prints the PDF, `page_map.py` reads back which page each heading
+and caption landed on, and the second pass substitutes the real numbers. The placeholder is the
+same width as a page number, so both passes paginate identically. The script re-measures at the
+end and fails loudly if any entry moved between passes.
+
+The individual steps, if you need to run one on its own:
+
+```bash
+python report/make_frontmatter.py  # regenerate the contents and figure lists from the document
+python report/build_report.py      # report.md -> report.html
+python report/page_map.py          # read page positions out of the rendered PDF
+python report/make_gantt.py        # regenerate Figure 1 from the git history
 ```
 
 `build_report.py` keeps image paths relative so the figures resolve whether the HTML is served
-over HTTP or opened straight from disk.
+over HTTP or opened straight from disk. `make_gantt.py` derives every date in the project
+timeline from the repository's own commit timestamps, so no date in the report is typed by hand.
 
 ---
 
@@ -149,7 +170,7 @@ over HTTP or opened straight from disk.
 ```
 data/spam.csv     dataset (label + message)
 src/              reusable helpers imported by the notebooks
-notebooks/        01_eda through 05_significance_interpretability_efficiency
+notebooks/        01_eda through 06_dataset_artifacts
 results/          metrics CSVs + figures (single source of truth for the report)
 report/           report.md, report.pdf, slides.md, references.md, screenshots/
 ```
@@ -163,6 +184,7 @@ report/           report.md, report.pdf, slides.md, references.md, screenshots/
 | 03 Preprocessing ablation | `ablation.csv`, `fig_ablation.png` |
 | 04 Hybrid features | `hybrid_comparison.csv`, `fig_hybrid_lift.png` |
 | 05 Significance / interpretability / efficiency | `significance.csv`, `efficiency.csv`, `hybrid_stat_coefficients.csv`, coefficient / importance / SHAP / efficiency figures |
+| 06 Dataset artifacts | `artifact_impact.csv`, `near_duplicates.csv`, `fig_artifact_impact.png` |
 
 ## Reproducibility guarantees
 
@@ -171,9 +193,12 @@ report/           report.md, report.pdf, slides.md, references.md, screenshots/
   Notebooks reload it; none of them re-splits.
 - Version-pinned dependencies in `requirements.txt`.
 - No hand-typed metrics - every reported number comes from a file in `results/`.
-- Notebooks 03 and 04 each contain an **anchor row** that re-runs the previous phase's exact
+- Notebooks 03, 04 and 06 each contain an **anchor row** that re-runs the previous phase's exact
   pipeline and asserts it reproduces that phase's metrics to full floating-point precision, so
   a change that would silently alter results fails loudly instead.
+- Results were **frozen** after notebook 05. Notebook 06 was added afterwards, in response to
+  external review, and is strictly additive: it writes only new files and its anchor gate proves
+  the four models still reproduce their frozen metrics to 1e-12 before it measures anything.
 - Every metric file regenerates identically from a fresh clone and a newly built virtualenv.
   `results/efficiency.csv` is the sole exception: it records wall-clock timings, which vary by
   a few percent per run by nature.
