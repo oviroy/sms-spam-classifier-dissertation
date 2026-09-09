@@ -30,3 +30,8 @@ ovi.pdf
 # The whole folder is therefore local-only; it was removed from the history, not just
 # from the current commit.
 report/
+
+# Supervisor correspondence. It is private feedback between the student and the
+# supervisor, not the author's work to publish, and the repository URL is cited in
+# the dissertation. Removed from the history, not just from the current commit.
+teacher reply.md
